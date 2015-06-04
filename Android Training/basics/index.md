@@ -14,6 +14,7 @@ After you've installed the Android SDK, start with this class to learn the basic
 * [Running Your Application](https://github.com/timosang/AndroidDemo/blob/master/Android%20Training/basics/firstapp/running-app.md)
 * [Building a Simple User Interface](https://github.com/timosang/AndroidDemo/blob/master/Android%20Training/basics/firstapp/building-ui.md)
 * [Starting Another Activity](https://github.com/timosang/AndroidDemo/blob/master/Android%20Training/basics/firstapp/starting-activity.md)
+
 #### [添加ActionBar(Adding the Action Bar)]()
 The action bar is one of the most important design elements you can implement for your app's activities. Although first introduced with API level 11, you can use the Support Library to include the action bar on devices running Android 2.1 or higher.(ActionBar是你的Activity中最重要的设计元素之一。尽管ActonBar是从API 11开始被引入的，你仍然可以从Android 2.1开始使用Support Library去实现ActionBar。)
 
@@ -53,6 +54,7 @@ How to save data on the device, whether it's temporary（临时的） files, dow
 * Saving Key-Value Sets
 * Saving Files
 * Saving Data in SQL Databases
+
 #### [与其他应用的交互(Interacting with Other Apps)]()
 
 How to build a user experience that leverages（手段，影响力） other apps available on the device to perform advanced user tasks, such as capture（俘获） a photo or view an address on a map.
