@@ -1,7 +1,5 @@
 # 添加Action按钮
 
-> 编写:[Vincent 4J](http://github.com/vincent4j) - 原文:<http://developer.android.com/training/basics/actionbar/adding-buttons.html>
-
 Action bar 允许我们为当前环境下最重要的操作添加按钮。那些直接出现在 action bar 中的 icon 和/或文本被称作**action buttons(操作按钮)**。安排不下的或不足够重要的操作被隐藏在 **action overflow** （超出空间的action，译者注）中。
 
 ![actionbar-actions](actionbar-actions.png)

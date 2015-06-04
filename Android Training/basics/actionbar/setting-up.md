@@ -1,20 +1,21 @@
-# 建立ActionBar
+# Setting Up the Action Bar（建立ActionBar）
 
-> 编写:[Vincent 4J](http://github.com/vincent4j) - 原文:<http://developer.android.com/training/basics/actionbar/setting-up.html>
-
-Action bar 最基本的形式，就是为 Activity 显示标题，并且在标题左边显示一个 app icon。即使在这样简单的形式下，action bar对于所有的 activity 来说是十分有用的。它告知用户他们当前所处的位置，并为你的 app 维护了持续的同一标识。
+In its most basic form, the action bar displays the title for the activity and the app icon on the left. Even in this simple form, the action bar is useful for all activities to inform users about where they are and to maintain a consistent identity for your app.（
+Action bar 最基本的形式，就是为 Activity 显示标题，并且在标题左边显示一个 app icon。即使在这样简单的形式下，action bar对于所有的 activity 来说是十分有用的。它告知用户他们当前所处的位置，并为你的 app 维护了持续的同一标识。）
 
 ![actionbar-basic](actionbar-basic.png)
 
-图 1. 一个有 app icon 和 Activity 标题的 action bar
+图 1.An action bar with the app icon and activity title.（ 一个有 app icon 和 Activity 标题的 action bar）
 
-设置一个基本的 action bar，需要 app 使用一个 activity 主题，该主题必须是 action bar 可用的。如何声明这样的主题取决于我们 app 支持的 Android 最低版本。本课程根据我们 app 支持的 Android 最低版本分为两部分。
 
-## 仅支持 Android 3.0 及以上版本
+Setting up a basic action bar requires that your app use an activity theme that enables the action bar. How to request such a theme depends on which version of Android is the lowest supported by your app. So this lesson is divided into two sections depending on which Android version is your lowest supported.（设置一个基本的 action bar，需要 app 使用一个 activity 主题，该主题必须是 action bar 可用的。如何声明这样的主题取决于我们 app 支持的 Android 最低版本。本课程根据我们 app 支持的 Android 最低版本分为两部分。）
 
-从 Android 3.0(API lever 11) 开始，所有使用 [Theme.Holo](http://developer.android.com/reference/android/R.style.html#Theme_Holo) 主题（或者它的子类）的 Activity 都包含了 action bar，当 [targetSdkVersion](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#target) 或 [minSdkVersion](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#min) 属性被设置成 “11” 或更大时，它是默认主题。
+## Support Android 3.0 and Above Only（仅支持 Android 3.0 及以上版本）
 
-所以，要为 activity 添加 action bar，只需简单地设置属性为 `11` 或者更大。例如：
+Beginning with Android 3.0 (API level 11), the action bar is included in all activities that use the [Theme.Holo](http://developer.android.com/reference/android/R.style.html#Theme_Holo) theme (or one of its descendants), which is the default theme when either the [targetSdkVersion](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#target)  or [minSdkVersion](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#min) attribute is set to "11" or greater.
+（从 Android 3.0(API lever 11) 开始，所有使用 [Theme.Holo](http://developer.android.com/reference/android/R.style.html#Theme_Holo) 主题（或者它的子类）的 Activity 都包含了 action bar，当 [targetSdkVersion](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#target) 或 [minSdkVersion](http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#min) 属性被设置成 “11” 或更大时，它是默认主题。）
+
+So to add the action bar to your activities, simply set either attribute to 11 or higher. For example:（所以，要为 activity 添加 action bar，只需简单地设置属性为 `11` 或者更大。例如：）
 
 ```xml
 <manifest ... >
@@ -23,7 +24,7 @@ Action bar 最基本的形式，就是为 Activity 显示标题，并且在标�
 </manifest>
 ```
 
-> **注意**: 如果创建了一个自定义主题，需确保这个主题使用一个 Theme.Holo的主题作为父类。详情见 [Action bar 的风格化](styling.html)
+> **注意**: If you've created a custom theme, be sure it uses one of the Theme.Holo themes as its parent. For details, see Styling the Action Bar. 如果创建了一个自定义主题，需确保这个主题使用一个 Theme.Holo的主题作为父类。详情见 [Action bar 的风格化](./styling.md)
 
 到此，我们的 app 使用了 `Theme.Holo` 主题，并且所有的 activity 都显示 action bar。
 
