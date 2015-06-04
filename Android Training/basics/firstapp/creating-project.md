@@ -21,6 +21,7 @@ This lesson shows how to create a new project either using Android Studio or usi
 * **Project location** is the directory on your system that holds the project files.(操作系统存放项目文件的目录。)
 
 ![studio-setup-1](studio-setup-1.png)
+
 **图1** Configure your new project
 
 3\. Under **Select the form factors your app will run on**, check the box for **Phone and Tablet**.（在**Select the form factors your app will run on**窗口勾选**Phone and Tablet**。）
@@ -32,7 +33,7 @@ The Minimum Required SDK is the earliest version(最低版本) of Android that y
 
 5\. Leave all of the other options (TV, Wear, and Glass) unchecked and click **Next**.(不要勾选其他选项 (TV, Wear, and Glass) ，点击 **Next**.)
 
-6\. Under **Add an activity to <template>**, select **Blank Activity** and click **Next**.(在**Add an activity to *<template\>*** 窗口选择**Blank Activity**，点击 **Next**.)
+6\. Under **Add an activity to <template>**, select **Blank Activity** and click **Next**.(在**Add an activity to **<template\>** 窗口选择**Blank Activity**，点击 **Next**.)
 
 7\.Under **Choose options for your new file**, change the **Activity Name** to MyActivity. The **Layout Name** changes to activity\_my, and the Title to MyActivity. The Menu Resource Name is \menu_my.（ 在**Choose options for your new file** 窗口修改**Activity Name** 为*MyActivity*，修改 **Layout Name** 为*activity\_my*，**Title** 修改为*MyActivity*，**Menu Resource Name** 修改为*menu\_my*。）
 
