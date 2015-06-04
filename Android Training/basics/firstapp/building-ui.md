@@ -1,22 +1,24 @@
-# 建立简单的用户界面
+# Building a Simple User Interface（建立简单的用户界面）
 
-> 编写:[yuanfentiank789](https://github.com/yuanfentiank789) - 原文:<http://developer.android.com/training/basics/firstapp/building-ui.html>
+In this lesson, you create a layout in XML that includes a text field and a button. In the next lesson, your app responds when the button is pressed by sending the content of the text field to another activity.(在本小节里，我们将学习如何用XML创建一个带有文本输入框和按钮的界面，下一节课将学会使app对按钮做出响应：按钮被按下时，文本框里的内容被发送到另外一个Activity。)
 
-    在本小节里，我们将学习如何用XML创建一个带有文本输入框和按钮的界面，下一节课将学会使app对按钮做出响应：按钮被按下时，文本框里的内容被发送到另外一个Activity。
+The graphical user interface for an Android app is built using a hierarchy of [View](http://developer.android.com/reference/android/view/View.html) and [ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html) objects. View objects are usually UI widgets such as ([Button](http://developer.android.com/guide/topics/ui/controls/button.html)) or ([text field](http://developer.android.com/guide/topics/ui/controls/text.html))，而[ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html). [ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html) objects are invisible view containers that define how the child views are laid out, such as in a grid or a vertical list.
+（Android的图形用户界面是由多个[View](http://developer.android.com/reference/android/view/View.html)和[ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html)构建出来的。[View](http://developer.android.com/reference/android/view/View.html)是通用的UI窗体小组件，比如按钮([Button](http://developer.android.com/guide/topics/ui/controls/button.html))或者文本框([text field](http://developer.android.com/guide/topics/ui/controls/text.html))，而[ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html)是不可见的，是用于定义子View布局方式的容器，比如网格部件(grid)和垂直列表部件(list)。）
 
+Android provides an XML vocabulary that corresponds to the subclasses of [View](http://developer.android.com/reference/android/view/View.html) and [ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html) so you can define your UI in XML using a hierarchy of UI elements.（
+Android提供了一个对应于[View](http://developer.android.com/reference/android/view/View.html)和[ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html)子类的一系列XMl标签，我们可以在XML里使用层级视图元素创建自己的UI。）
 
-Android的图形用户界面是由多个[View](http://developer.android.com/reference/android/view/View.html)和[ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html)构建出来的。[View](http://developer.android.com/reference/android/view/View.html)是通用的UI窗体小组件，比如按钮([Button](http://developer.android.com/guide/topics/ui/controls/button.html))或者文本框([text field](http://developer.android.com/guide/topics/ui/controls/text.html))，而[ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html)是不可见的，是用于定义子View布局方式的容器，比如网格部件(grid)和垂直列表部件(list)。
-
-Android提供了一个对应于[View](http://developer.android.com/reference/android/view/View.html)和[ViewGroup](http://developer.android.com/reference/android/view/ViewGroup.html)子类的一系列XMl标签，我们可以在XML里使用层级视图元素创建自己的UI。
-
+Layouts are subclasses of the ViewGroup. In this exercise, you'll work with a [LinearLayout](http://developer.android.com/reference/android/widget/LinearLayout.html).
 Layouts是ViewGroup的子类，接下来的练习将使用[LinearLayout](http://developer.android.com/reference/android/widget/LinearLayout.html)。
 
 ![viewgroup](viewgroup.png)
 
-**Figure 1.** 关于viewgroup对象如何组织布局分支和包含其他view对象。
+**Figure 1.** Illustration of how ViewGroup objects form branches in the layout and contain other View objects.（关于viewgroup对象如何组织布局分支和包含其他view对象。）
 
 
-> 可选的布局文件：在XML中定义界面布局而不是在运行时去动态生成布局是有多个原因的，其中最重要的一点是这样可以使得你为不同大小的屏幕创建不同的布局文件。例如，你可以创建创建2个版本的布局文件，告诉系统在小的屏幕上使用其中一个布局文件，在大的屏幕上使用另外一个布局文件。更多信息，请参考[兼容不同的设备](../supporting-devices/index.html)
+> Alternative Layouts
+
+>Declaring your UI layout in XML rather than runtime code is useful for several reasons, but it's especially important so you can create different layouts for different screen sizes. For example, you can create two versions of a layout and tell the system to use one on "small" screens and the other on "large" screens. For more information, see the class about Supporting Different Devices.(可选的布局文件：在XML中定义界面布局而不是在运行时去动态生成布局是有多个原因的，其中最重要的一点是这样可以使得你为不同大小的屏幕创建不同的布局文件。例如，你可以创建创建2个版本的布局文件，告诉系统在小的屏幕上使用其中一个布局文件，在大的屏幕上使用另外一个布局文件。更多信息，请参考[兼容不同的设备](../supporting-devices/index.md))
 
 ## 创建一个LinearLayout
 
