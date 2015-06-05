@@ -1,20 +1,18 @@
 # 发送简单的网络请求(Sending a Simple Request)
 
-> 编写:[kesenhoo](https://github.com/kesenhoo) - 原文:<http://developer.android.com/training/volley/simple.html>
+At a high level, you use Volley by creating a `RequestQueue` passing it `Request` objects. The RequestQueue manages worker threads for running the network operations, reading from and writing to the cache, and parsing responses（解析响应). Requests do the parsing of raw responses and Volley takes care of dispatching the parsed response back to the main thread for delivery.(使用Volley的方式是，你通过创建一个`RequestQueue`并传递`Request`对象给它。RequestQueue管理用来执行网络操作的工作线程，从Cache中读写数据，并解析Http的响应内容。`Requests`执行raw responses的解析，Volley会把响应的数据分发给主线程。)
 
-使用Volley的方式是，你通过创建一个`RequestQueue`并传递`Request`对象给它。RequestQueue管理用来执行网络操作的工作线程，从Cache中读写数据，并解析Http的响应内容。`Requests`执行raw responses的解析，Volley会把响应的数据分发给主线程。
+This lesson describes how to send a request using the `Volley.newRequestQueue` convenience(方便的，便利的) method, which sets up a RequestQueue for you. See the next lesson, Setting Up a RequestQueue, for information on how to set up a RequestQueue yourself.（这节课会介绍如何使用`Volley.newRequestQueue`这个建立请求队列RequestQueue的方法来发送一个请求，在下一节课[建立一个请求队列Setting Up a RequestQueue](request-queue.md)中会介绍你自己如何建立一个请求队列。）
 
-这节课会介绍如何使用`Volley.newRequestQueue`这个建立请求队列RequestQueue的方法来发送一个请求，在下一节课[建立一个请求队列Setting Up a RequestQueue](request-queue.html)中会介绍你自己如何建立一个请求队列。
-
-这节课也会介绍如何添加一个请求到RequesutQueue以及如何取消一个请求。
+This lesson also describes how to add a request to a RequestQueue and cancel a request.(这节课也会介绍如何添加一个请求到RequesutQueue以及如何取消一个请求。)
 
 ## 1)Add the INTERNET Permission
 
-为了使用Volley，你必须添加`android.permission.INTERNET `权限到你的manifest文件中。没有这个权限，你的app将无法访问网络。
+(To use Volley, you must add the android.permission.INTERNET permission to your app's manifest. Without this, your app won't be able to connect to the network.)为了使用Volley，你必须添加`android.permission.INTERNET `权限到你的manifest文件中。没有这个权限，你的app将无法访问网络。
 
 ## 2)Use newRequestQueue
 
-Volley提供了一个简便的方法：`Volley.newRequestQueue`用来为你建立一个`RequestQueue`，使用默认值，并启动这个队列。例如：
+Volley provides a convenience method `Volley.newRequestQueue` that sets up a RequestQueue for you, using default values, and starts the queue. For example:(Volley提供了一个简便的方法：`Volley.newRequestQueue`用来为你建立一个`RequestQueue`，使用默认值，并启动这个队列。例如：)
 
 ```java
 final TextView mTextView = (TextView) findViewById(R.id.text);
@@ -42,9 +40,9 @@ StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
 queue.add(stringRequest);
 ```
 
-Volley总是将解析后的数据返回至主线程中。在主线程中更加合适使用接收到的数据用来操作UI控件，这样你可以在响应的handler中轻松的修改UI，但是对于库提供的一些其他方法是有些特殊的，例如与取消有关的。
+Volley always delivers parsed responses on the main thread. Running on the main thread is convenient for populating UI controls with received data, as you can freely modify UI controls directly from your response handler, but it's especially critical to many of the important semantics provided by the library, particularly related to canceling requests.(Volley总是将解析后的数据返回至主线程中。在主线程中更加合适使用接收到的数据用来操作UI控件，这样你可以在响应的handler中轻松的修改UI，但是对于库提供的一些其他方法是有些特殊的，例如与取消有关的。)
 
-关于如何创建你自己的请求队列，而不是使用Volley.newRequestQueue方法，请查看[建立一个请求队列Setting Up a RequestQueue](request-queue.html)。
+See Setting Up a RequestQueue for a description of how to set up a RequestQueue yourself, instead of using the Volley.newRequestQueue convenience method.(关于如何创建你自己的请求队列，而不是使用Volley.newRequestQueue方法，请查看[建立一个请求队列Setting Up a RequestQueue](request-queue.md)。)
 
 ## 3)Send a Request
 

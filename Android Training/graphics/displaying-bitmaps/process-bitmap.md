@@ -1,14 +1,12 @@
-# 非UI线程处理Bitmap
+# Processing Bitmaps Off the UI Thread（非UI线程处理Bitmap）
 
-> 编写:[kesenhoo](https://github.com/kesenhoo) - 原文:<http://developer.android.com/training/displaying-bitmaps/process-bitmap.html>
+The BitmapFactory.decode* methods, discussed in the Load Large Bitmaps Efficiently lesson, should not be executed（执行） on the main UI thread if the source data is read from disk or a network location (or really any source other than memory). The time this data takes to load is unpredictable and depends on a variety of factors (speed of reading from disk or network, size of image, power of CPU（CPU速度）, etc.). If one of these tasks blocks the UI thread, the system flags your application as non-responsive and the user has the option of closing it (see [Designing for Responsiveness](http://developer.android.com/training/articles/perf-anr.html) for more information).（在上一课中介绍了一系列的<a href="http://developer.android.com/reference/android/graphics/BitmapFactory.html#decodeByteArray(byte[], int, int, android.graphics.BitmapFactory.Options">BitmapFactory.decode*</a>方法，当图片来源是网络或者是存储卡时（或者是任何不在内存中的形式），这些方法都不应该在UI 线程中执行。因为在上述情况下加载数据时，其执行时间是不可估计的，它依赖于许多因素（从网络或者存储卡读取数据的速度，图片的大小，CPU的速度等）。如果其中任何一个子操作阻塞了UI线程，系统都会容易出现应用无响应的错误。）
 
-在上一课中介绍了一系列的<a href="http://developer.android.com/reference/android/graphics/BitmapFactory.html#decodeByteArray(byte[], int, int, android.graphics.BitmapFactory.Options">BitmapFactory.decode*</a>方法，当图片来源是网络或者是存储卡时（或者是任何不在内存中的形式），这些方法都不应该在UI 线程中执行。因为在上述情况下加载数据时，其执行时间是不可估计的，它依赖于许多因素（从网络或者存储卡读取数据的速度，图片的大小，CPU的速度等）。如果其中任何一个子操作阻塞了UI线程，系统都会容易出现应用无响应的错误。
-
-这一节课会介绍如何使用AsyncTask在后台线程中处理Bitmap并且演示如何处理并发（concurrency）的问题。
+This lesson walks you through processing bitmaps in a background thread using AsyncTask and shows you how to handle concurrency issues.( 这一节课会介绍如何使用AsyncTask在后台线程中处理Bitmap并且演示如何处理并发（concurrency）的问题。)
 
 ## 使用AsyncTask(Use a AsyncTask)
 
-[AsyncTask](http://developer.android.com/reference/android/os/AsyncTask.html) 类提供了一个在后台线程执行一些操作的简单方法，它还可以把后台的执行结果呈现到UI线程中。下面是一个加载大图的示例：
+The [AsyncTask](http://developer.android.com/reference/android/os/AsyncTask.html) class provides an easy way to execute some work in a background thread and publish the results back on the UI thread. To use it, create a subclass and override the provided methods. Here’s an example of loading a large image into an **ImageView** using **AsyncTask** and **decodeSampledBitmapFromResource()**:([AsyncTask](http://developer.android.com/reference/android/os/AsyncTask.html) 类提供了一个在后台线程执行一些操作的简单方法，它还可以把后台的执行结果呈现到UI线程中。为了使用它，创建一个子类然后覆盖它的方法。下面是一个加载大图的示例：)
 
 ```java
 class BitmapWorkerTask extends AsyncTask {
@@ -40,9 +38,9 @@ class BitmapWorkerTask extends AsyncTask {
 }
 ```
 
-为[ImageView](http://developer.android.com/reference/android/widget/ImageView.html)使用[WeakReference](http://developer.android.com/reference/java/lang/ref/WeakReference.html)确保了AsyncTask所引用的资源可以被垃圾回收器回收。由于当任务结束时不能确保[ImageView](http://developer.android.com/reference/android/widget/ImageView.html)仍然存在，因此我们必须在`onPostExecute()`里面对引用进行检查。该ImageView在有些情况下可能已经不存在了，例如，在任务结束之前用户使用了回退操作，或者是配置发生了改变（如旋转屏幕等）。
+The [WeakReference](http://developer.android.com/reference/java/lang/ref/WeakReference.html) to the [ImageView](http://developer.android.com/reference/android/widget/ImageView.html) ensures that the [AsyncTask](http://developer.android.com/reference/android/os/AsyncTask.html)  does not prevent the ImageView and anything it references from being garbage collected. There’s no guarantee the ImageView is still around when the task finishes, so you must also check the reference in onPostExecute(). The ImageView may no longer exist, if for example, the user navigates away from the activity or if a configuration change happens before the task finishes.（[ImageView](http://developer.android.com/reference/android/widget/ImageView.html)使用[WeakReference](http://developer.android.com/reference/java/lang/ref/WeakReference.html)确保了[AsyncTask](http://developer.android.com/reference/android/os/AsyncTask.html) 所引用的资源可以被垃圾回收器回收。由于当任务结束时不能确保[ImageView](http://developer.android.com/reference/android/widget/ImageView.html)仍然存在，因此我们必须在`onPostExecute()`里面对引用进行检查。该ImageView在有些情况下可能已经不存在了，例如，在任务结束之前用户使用了回退操作，或者是配置发生了改变（如旋转屏幕等）。）
 
-开始异步加载位图，只需要创建一个新的任务并执行它即可:
+To start loading the bitmap asynchronously, simply create a new task and execute it:（开始异步加载位图，只需要创建一个新的任务并执行它即可:）
 
 ```java
 public void loadBitmap(int resId, ImageView imageView) {
