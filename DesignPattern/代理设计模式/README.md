@@ -159,7 +159,296 @@ String sql = "select * from 用户表,部门表 "
 
 
 
-
+有什么问题
 上面的实现看起来很简单，功能也正确，但是蕴含一个较大的问题，那就是：当一次性访问的数据条数过多，而且每条描述的数据量又很大的话，那会消耗较多的内存。
 前面也说了，对于用户表，事实上是有很多字段的，不仅仅是示例的那么几个，再加上不使用翻页，一次性访问的数据就可能会有很多条。如果一次性需要访问的数据较多的话，内存开销会比较大。
 但是从客户使用角度来说，有很大的随机性，客户既可能访问每一条数据，也可能一条都不访问。也就是说，一次性访问很多条数据，消耗了大量内存，但是很可能是浪费掉了，客户根本就不会去访问那么多数据，对于每条数据，客户只需要看看姓名而已。
+
+###使用模式的解决方案
+
+![](代理模式解决问题.png)
+
+定义用户数据对象的接口
+
+```java
+
+/**
+ * 定义用户数据对象的接口
+ */
+public interface UserModelApi {
+	public String getUserId();
+	public void setUserId(String userId);
+	public String getName();
+	public void setName(String name);
+	public String getDepId();
+	public void setDepId(String depId);
+	public String getSex();
+	public void setSex(String sex);
+}
+
+
+
+```
+
+描述用户数据的对象
+```java
+/**
+ * 描述用户数据的对象
+ */
+public class UserModel implements UserModelApi{	
+	/**
+	 * 用户编号
+	 */
+	private String userId;
+	/**
+	 * 用户姓名
+	 */
+	private String name;
+	/**
+	 * 部门编号
+	 */
+	private String depId;
+	/**
+	 * 性别
+	 */
+	private String sex;
+	
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDepId() {
+		return depId;
+	}
+	public void setDepId(String depId) {
+		this.depId = depId;
+	}
+	public String getSex() {
+		return sex;
+	}
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+	
+	@Override
+	public String toString(){
+		return "userId="+userId+",name="+name+",depId="+depId+",sex="+sex+"\n";
+	}
+}
+
+
+
+
+
+```
+
+```java
+import java.util.*;
+import java.sql.*;
+
+/**
+ * 实现示例要求的功能
+ */
+public class UserManager {	
+	/**
+	 * 根据部门编号来获取该部门下的所有人员
+	 * @param depId 部门编号
+	 * @return 该部门下的所有人员
+	 */
+	public Collection<UserModelApi> getUserByDepId(String depId)throws Exception{
+		Collection<UserModelApi> col = new ArrayList<UserModelApi>();
+		Connection conn = null;
+		try{
+			conn = this.getConnection();
+			//只需要查询userId和name两个值就可以了
+			String sql = "select u.userId,u.name "
+				+"from tbl_user u,tbl_dep d "
+				+"where u.depId=d.depId and d.depId like ?";
+
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, depId+"%");
+			
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()){
+				//这里是创建的代理对象，而不是直接创建UserModel的对象
+				Proxy proxy = new Proxy(new UserModel());
+				//只是设置userId和name两个值就可以了
+				proxy.setUserId(rs.getString("userId"));
+				proxy.setName(rs.getString("name"));
+				
+				col.add(proxy);
+			}
+			
+			rs.close();
+			pstmt.close();
+		}finally{
+			conn.close();
+		}
+		return col;
+	}
+	/**
+	 * 获取与数据库的连接
+	 * @return 数据库连接
+	 */
+	private Connection getConnection() throws Exception {
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		return DriverManager.getConnection(
+				"jdbc:oracle:thin:@localhost:1521:orcl", "test", "test");
+	}
+}
+
+
+
+```
+
+代理对象，代理用户数据对象
+```java
+import java.sql.*;
+import java.util.*;
+
+/**
+ * 代理对象,代理用户数据对象
+ */
+public class Proxy implements UserModelApi{
+	/**
+	 * 持有被代理的具体的目标对象
+	 */
+	private UserModel realSubject=null;
+	/**
+	 * 构造方法，传入被代理的具体的目标对象
+	 * @param realSubject 被代理的具体的目标对象
+	 */
+	public Proxy(UserModel realSubject){
+		this.realSubject = realSubject;
+	}
+	/**
+	 * 标示是否已经重新装载过数据了
+	 */
+	private boolean loaded = false;
+	
+	
+	public String getUserId() {
+		return realSubject.getUserId();
+	}
+	public void setUserId(String userId) {
+		realSubject.setUserId(userId);
+	}
+	public String getName() {
+		return realSubject.getName();
+	}
+	public void setName(String name) {
+		realSubject.setName(name);
+	}
+	
+	
+	public void setDepId(String depId) {
+		realSubject.setDepId(depId);
+	}
+	public void setSex(String sex) {
+		realSubject.setSex(sex);
+	}
+	
+	public String getDepId() {
+		//需要判断是否已经装载过了
+		if(!this.loaded){
+			//从数据库中重新装载
+			reload();
+			//设置重新装载的标志为true
+			this.loaded = true;
+		}
+		return realSubject.getDepId();
+	}	
+	public String getSex() {
+		if(!this.loaded){
+			reload();
+			this.loaded = true;
+		}
+		return realSubject.getSex();
+	}
+	
+	/**
+	 * 重新查询数据库以获取完整的用户数据
+	 */
+	private void reload(){
+		System.out.println("重新查询数据库获取完整的用户数据，userId=="+realSubject.getUserId());
+		Connection conn = null;
+		try{
+			conn = this.getConnection();
+			String sql = "select * from tbl_user where userId=? ";
+
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, realSubject.getUserId());
+			
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()){
+				//只需要重新获取除了userId和name外的数据
+				realSubject.setDepId(rs.getString("depId"));
+				realSubject.setSex(rs.getString("sex"));
+			}
+			
+			rs.close();
+			pstmt.close();
+		}catch(Exception err){
+			err.printStackTrace();
+		}finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	public String toString(){
+		return "userId="+getUserId()+",name="+getName()
+		+",depId="+getDepId()+",sex="+getSex()+"\n";
+	}
+
+	private Connection getConnection() throws Exception {
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		return DriverManager.getConnection(
+				"jdbc:oracle:thin:@localhost:1521:orcl", "test", "test");
+	}
+}
+
+
+```
+
+分析：这个需求的要求是需要一次性访问多条数据（即全部员工的姓名），基本上上只需要访问员工的姓名，因此可以考虑刚开始从数据库查询返回的数据就只有用户编号和用户姓名。当客户想要查看某个用户的数据的时候，再次根据用户编号到数据库中获取完整数据。这样，在满足客户端功能的前提下，大大减少了对内存的消耗，只是每次需要重新查询一下数据，算是一个以**时间换空间的策略**。
+
+代理模式引入一个Proxy对象来解决这个问题，刚开始只有用户编号和姓名的时候，不是一个完整的用户对象，而是一个代理对象，当需要访问完整的用户数据的时候，代理会从数据库中重新获取相应的数据，通常情况下是当客户需要访问除了用户编号和姓名之外的数据的时候，代理才会重新去获取数据。
+
+
+
+运行结果
+
+
+	用户编号：=user0001,用户姓名：=张三1
+	用户编号：=user0002,用户姓名：=张三2
+	用户编号：=user0003,用户姓名：=张三3
+	重新查询数据库获取完整的用户数据，userId==user0001
+	用户编号：=user0001,用户姓名：=张三1,所属部门：=010101
+	重新查询数据库获取完整的用户数据，userId==user0002
+	用户编号：=user0002,用户姓名：=张三2,所属部门：=010101
+	重新查询数据库获取完整的用户数据，userId==user0003
+	用户编号：=user0003,用户姓名：=张三3,所属部门：=010102
+
+前三条一次性加载，后三条当需要访问某个用户数据时，重新加载完整的用户数据。也就是说如果只是访问用户编号和用户姓名的数据，是不需要重新查询数据库的，只有当访问到这两个数据以外的数据时，才需要重新查询数据库以获得完整的数据。这样一来，如果客户不访问除这两个数据以外的数据，那么就不需要重新查询数据库，也就不需要装载那么多数据，从而节省内存。
+
+
+1+N次查询
+      
+看完上面的示例，可能有些朋友会发现，这种实现方式有一个潜在的问题，就是如果客户对每条用户数据都要求查看详细的数据的话，那么总的查询数据库的次数会是1+N次之多。
+      
+第一次查询，获取到N条数据的用户编号和姓名，然后展示给客户看。如果这个时候，客户对每条数据都点击查看详细信息的话，那么每一条数据都需要重新查询数据库，那么最后总的查询数据库的次数就是1+N次了。
+       
+从上面的分析可以看出，这种做法最合适的场景就是：**客户大多数情况下只需要查看用户编号和姓名，而少量的数据需要查看详细数据。这样既节省了内存，又减少了操作数据库的次数。**
+       
+看到这里，可能会有朋友想起，Hibernate这类ORM的框架，在Lazy Load的情况下，也存在1+N次查询的情况，原因就在于，Hibernate的Lazy Load就是使用代理来实现的，具体的实现细节这里就不去讨论了，但是原理是一样的。
